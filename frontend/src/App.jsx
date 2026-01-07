@@ -18,7 +18,7 @@ export default function HNSearch() {
         setResults(null);
 
         try {
-            const response = await fetch('http://localhost:8000/search-stories', {
+            const response = await fetch('https://hn-search.onrender.com/search-stories', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
