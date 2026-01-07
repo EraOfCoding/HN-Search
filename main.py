@@ -174,7 +174,7 @@ async def search_stories(request: SearchRequest):
     """
     # Step 1: Fetch top 500 stories
     print("Fetching top 500 stories...")
-    stories = await get_top_stories(limit=200)  # change to 500 when in production
+    stories = await get_top_stories(limit=50)  # change to 500 when in production
     print(f"Fetched {len(stories)} stories")
 
     # Step 2: Fetch text content for each story
