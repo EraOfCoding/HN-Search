@@ -22,12 +22,14 @@ external_http_client: httpx.AsyncClient = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Create the client
-    global http_client
+
     http_client = httpx.AsyncClient(base_url=HN_BASE_URL)
+    external_http_client = httpx.AsyncClient(timeout=10)
+
     yield
-    # Shutdown: Clean up the client
+
     await http_client.aclose()
+    await external_http_client.aclose()
 
 
 app = FastAPI(lifespan=lifespan)
