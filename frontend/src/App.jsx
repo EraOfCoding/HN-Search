@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Search, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
 
+// const BACKEND_URL = 'https://hn-search.onrender.com/search-stories'
+
+const BACKEND_URL = 'http://127.0.0.1:8000/search-stories'
+
 export default function HNSearch() {
     const [prompt, setPrompt] = useState('');
     const [results, setResults] = useState(null);
@@ -18,7 +22,7 @@ export default function HNSearch() {
         setResults(null);
 
         try {
-            const response = await fetch('https://hn-search.onrender.com/search-stories', {
+            const response = await fetch(BACKEND_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

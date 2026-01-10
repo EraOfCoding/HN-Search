@@ -1,8 +1,9 @@
 import asyncio
 from contextlib import asynccontextmanager
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from openai import AsyncOpenAI
 import os
+from dotenv import load_dotenv
 import numpy as np
 from urllib.parse import urlparse
 
@@ -11,6 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import httpx
 from pydantic import BaseModel
 
+
+load_dotenv()
 
 HN_BASE_URL = "https://hacker-news.firebaseio.com/v0"
 http_client: Optional[httpx.AsyncClient] = None
@@ -169,6 +172,41 @@ async def embed_text(text: str) -> List[float]:
     return resp.data[0].embedding
 
 
+async def embed_stories(
+    stories: List[Dict[str, Any]], batch_size: int = 50
+) -> Tuple[List[str], List[List[float]]]:
+    """
+    Fetch text content and generate embeddings for a list of stories.
+
+    Args:
+        stories: List of HN story dictionaries
+        batch_size: Number of stories to embed in each batch
+
+    Returns:
+        Tuple of (story_texts, story_embeddings)
+    """
+    print(f"Fetching text content from URLs for {len(stories)} stories...")
+    story_texts = []
+    for i, story in enumerate(stories):
+        text = await fetch_url_text(story)
+        story_texts.append(text)
+        if (i + 1) % 50 == 0:
+            print(f"Processed {i + 1}/{len(stories)} stories")
+
+    print("Generating embeddings for stories...")
+    story_embeddings = []
+
+    for i in range(0, len(story_texts), batch_size):
+        batch = story_texts[i : i + batch_size]
+        batch_embeddings = await asyncio.gather(*[embed_text(text) for text in batch])
+        story_embeddings.extend(batch_embeddings)
+        print(
+            f"Embedded {min(i + batch_size, len(story_texts))}/{len(story_texts)} stories"
+        )
+
+    return story_texts, story_embeddings
+
+
 def cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
     """Calculate cosine similarity between two vectors."""
     v1 = np.array(vec1)
@@ -197,28 +235,10 @@ async def search_stories(request: SearchRequest):
     """
 
     print("Fetching top 500 stories...")
-    stories = await get_top_stories(limit=50)  # change to 500 when in production
+    stories = await get_top_stories(limit=200)  # change to 500 when in production
     print(f"Fetched {len(stories)} stories")
 
-    print("Fetching text content from URLs...")
-    story_texts = []
-    for i, story in enumerate(stories):
-        text = await fetch_url_text(story)
-        story_texts.append(text)
-        if (i + 1) % 50 == 0:
-            print(f"Processed {i + 1}/{len(stories)} stories")
-
-    print("Generating embeddings for stories...")
-    story_embeddings = []
-
-    batch_size = 50
-    for i in range(0, len(story_texts), batch_size):
-        batch = story_texts[i : i + batch_size]
-        batch_embeddings = await asyncio.gather(*[embed_text(text) for text in batch])
-        story_embeddings.extend(batch_embeddings)
-        print(
-            f"Embedded {min(i + batch_size, len(story_texts))}/{len(story_texts)} stories"
-        )
+    story_texts, story_embeddings = await embed_stories(stories)
 
     print(f"Embedding search prompt: '{request.prompt}'")
     prompt_embedding = await embed_text(request.prompt)
@@ -255,6 +275,6 @@ async def search_stories(request: SearchRequest):
     }
 
 
-@app.get("/hi")
+@app.get("/")
 async def read_root():
-    return {"message": "Waleikum Hi!"}
+    return {"message": "Hey there!"}
