@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Search, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
 
-// const BACKEND_URL = 'https://hn-search.onrender.com/search-stories'
+const BACKEND_URL = 'https://hn-search.onrender.com/search-stories'
 
-const BACKEND_URL = 'http://127.0.0.1:8000/search-stories'
+// const BACKEND_URL = 'http://127.0.0.1:8000/search-stories'
 
 export default function HNSearch() {
     const [prompt, setPrompt] = useState('');
