@@ -14,28 +14,28 @@ export default function HNSearch() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const response = await fetch(STATS_URL)
-                if (!response.ok) {
-                    throw new Error(`Response status: ${response.status}`);
-                }
+    // useEffect(() => {
+    //     const fetchStats = async () => {
+    //         try {
+    //             const response = await fetch(STATS_URL)
+    //             if (!response.ok) {
+    //                 throw new Error(`Response status: ${response.status}`);
+    //             }
 
-                const stats = await response.json();
-                const total_stories_in_db = stats.total_stories;
-                setSearched(total_stories_in_db);
+    //             const stats = await response.json();
+    //             const total_stories_in_db = stats.total_stories;
+    //             setSearched(total_stories_in_db);
 
-            }
-            catch (err) {
-                setError(err.message || 'Failed to fetch results. Make sure the API server is running.');
-                console.error('Search error:', err);
-            }
+    //         }
+    //         catch (err) {
+    //             setError(err.message || 'Failed to fetch results. Make sure the API server is running.');
+    //             console.error('Search error:', err);
+    //         }
 
-        }
+    //     }
 
-        fetchStats()
-    }, [])
+    //     fetchStats()
+    // }, [])
 
     const handleSearch = async () => {
         if (!prompt.trim()) {
@@ -46,6 +46,22 @@ export default function HNSearch() {
         setLoading(true);
         setError(null);
         setResults(null);
+
+        try {
+            const response = await fetch(STATS_URL)
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            const stats = await response.json();
+            const total_stories_in_db = stats.total_stories;
+            setSearched(total_stories_in_db);
+
+        }
+        catch (err) {
+            setError(err.message || 'Failed to fetch results. Make sure the API server is running.');
+            console.error('Search error:', err);
+        }
 
         try {
             const response = await fetch(SEARCH_URL, {
