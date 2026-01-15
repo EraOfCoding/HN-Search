@@ -1,15 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
 
-const BACKEND_URL = 'https://hn-search.onrender.com/search-stories'
+// const SEARCH_URL = 'https://hn-search.onrender.com/search-stories'
+// const STATS_URL = 'https://hn-search.onrender.com/search-stories'
 
-// const BACKEND_URL = 'http://127.0.0.1:8000/search-stories'
+const SEARCH_URL = 'http://127.0.0.1:8000/search-stories'
+const STATS_URL = 'http://127.0.0.1:8000/stats'
 
 export default function HNSearch() {
     const [prompt, setPrompt] = useState('');
     const [results, setResults] = useState(null);
+    const [searched, setSearched] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await fetch(STATS_URL)
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+
+                const stats = await response.json();
+                const total_stories_in_db = stats.total_stories;
+                setSearched(total_stories_in_db);
+
+            }
+            catch (err) {
+                setError(err.message || 'Failed to fetch results. Make sure the API server is running.');
+                console.error('Search error:', err);
+            }
+
+        }
+
+        fetchStats()
+    }, [])
 
     const handleSearch = async () => {
         if (!prompt.trim()) {
@@ -22,7 +48,7 @@ export default function HNSearch() {
         setResults(null);
 
         try {
-            const response = await fetch(BACKEND_URL, {
+            const response = await fetch(SEARCH_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -62,7 +88,7 @@ export default function HNSearch() {
                         HackerNews Semantic Search
                     </h1>
                     <p className="text-gray-600">
-                        Search top 500 HN stories using AI-powered semantic similarity
+                        Search database of HackerNews stories using AI-powered semantic similarity
                     </p>
                 </div>
 
@@ -118,7 +144,7 @@ export default function HNSearch() {
                     <div className="bg-white rounded-lg shadow-lg p-12 text-center">
                         <Loader2 className="w-12 h-12 animate-spin text-orange-600 mx-auto mb-4" />
                         <p className="text-gray-600">
-                            Searching through 500 stories and computing similarities...
+                            Searching through {searched} stories and computing similarities...
                         </p>
                         <p className="text-sm text-gray-500 mt-2">
                             This may take a minute or two
