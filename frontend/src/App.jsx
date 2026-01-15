@@ -46,22 +46,6 @@ export default function HNSearch() {
         setError(null);
         setResults(null);
 
-        // Setting Stats
-        // try {
-        //     const response = await fetch(STATS_URL)
-        //     if (!response.ok) {
-        //         throw new Error(`Response status: ${response.status}`);
-        //     }
-
-        //     const stats = await response.json();
-        //     const total_stories_in_db = stats.total_stories;
-        //     setSearched(total_stories_in_db);
-
-        // }
-        // catch (err) {
-        //     console.error('Search error:', err);
-        // }
-
         try {
             const response = await fetch(SEARCH_URL, {
                 method: 'POST',
@@ -80,6 +64,7 @@ export default function HNSearch() {
 
             const data = await response.json();
             setResults(data);
+            console.log(data)
         } catch (err) {
             setError(err.message || 'Failed to fetch results. Make sure the API server is running.');
             console.error('Search error:', err);
@@ -199,7 +184,7 @@ export default function HNSearch() {
                                         </span>
                                         {result.score && (
                                             <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
-                                                {result.score} pts
+                                                ▲ {result.score} upvotes
                                             </span>
                                         )}
                                     </div>
