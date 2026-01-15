@@ -14,28 +14,27 @@ export default function HNSearch() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // useEffect(() => {
-    //     const fetchStats = async () => {
-    //         try {
-    //             const response = await fetch(STATS_URL)
-    //             if (!response.ok) {
-    //                 throw new Error(`Response status: ${response.status}`);
-    //             }
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await fetch(STATS_URL)
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
 
-    //             const stats = await response.json();
-    //             const total_stories_in_db = stats.total_stories;
-    //             setSearched(total_stories_in_db);
+                const stats = await response.json();
+                const total_stories_in_db = stats.total_stories;
+                setSearched(total_stories_in_db);
 
-    //         }
-    //         catch (err) {
-    //             setError(err.message || 'Failed to fetch results. Make sure the API server is running.');
-    //             console.error('Search error:', err);
-    //         }
+            }
+            catch (err) {
+                console.error('Search error:', err);
+            }
 
-    //     }
+        }
 
-    //     fetchStats()
-    // }, [])
+        fetchStats()
+    }, [])
 
     const handleSearch = async () => {
         if (!prompt.trim()) {
@@ -47,21 +46,21 @@ export default function HNSearch() {
         setError(null);
         setResults(null);
 
-        try {
-            const response = await fetch(STATS_URL)
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
+        // Setting Stats
+        // try {
+        //     const response = await fetch(STATS_URL)
+        //     if (!response.ok) {
+        //         throw new Error(`Response status: ${response.status}`);
+        //     }
 
-            const stats = await response.json();
-            const total_stories_in_db = stats.total_stories;
-            setSearched(total_stories_in_db);
+        //     const stats = await response.json();
+        //     const total_stories_in_db = stats.total_stories;
+        //     setSearched(total_stories_in_db);
 
-        }
-        catch (err) {
-            setError(err.message || 'Failed to fetch results. Make sure the API server is running.');
-            console.error('Search error:', err);
-        }
+        // }
+        // catch (err) {
+        //     console.error('Search error:', err);
+        // }
 
         try {
             const response = await fetch(SEARCH_URL, {
@@ -160,7 +159,7 @@ export default function HNSearch() {
                     <div className="bg-white rounded-lg shadow-lg p-12 text-center">
                         <Loader2 className="w-12 h-12 animate-spin text-orange-600 mx-auto mb-4" />
                         <p className="text-gray-600">
-                            Searching through {searched} stories and computing similarities...
+                            Searching through {searched == 0 ? "database of" : searched} stories and computing similarities...
                         </p>
                         <p className="text-sm text-gray-500 mt-2">
                             This may take a minute or two
