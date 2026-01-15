@@ -1,7 +1,9 @@
 fastapi
-pydantic
+uvicorn[standard]
 httpx
 openai
+pinecone
+pydantic
+pydantic-settings
 python-dotenv
 numpy
-uvicorn[standard]
