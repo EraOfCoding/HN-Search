@@ -1,0 +1,23 @@
+name: Daily HN Story Ingestion
+
+on:
+  schedule:
+    # Runs at 7:00 AM UTC every day (midnight Pacific Time)
+    - cron: '0 7 * * *'
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+jobs:
+  ingest-stories:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Database Update
+        run: |
+          curl -X POST "${{ secrets.BACKEND_URL }}/update-database" \
+            -H "Content-Type: application/json" \
+            -d '{"limit": 500}' \
+            --max-time 300
+      
+      - name: Check Stats
+        run: |
+          curl "${{ secrets.BACKEND_URL }}/stats"
