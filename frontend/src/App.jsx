@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
 
-// const SEARCH_URL = 'https://hn-search.onrender.com/search-stories'
-// const STATS_URL = 'https://hn-search.onrender.com/search-stories'
+const SEARCH_URL = 'https://hn-search.onrender.com/search-stories'
+const STATS_URL = 'https://hn-search.onrender.com/search-stories'
 
-const SEARCH_URL = 'http://127.0.0.1:8000/search-stories'
-const STATS_URL = 'http://127.0.0.1:8000/stats'
+// const SEARCH_URL = 'http://127.0.0.1:8000/search-stories'
+// const STATS_URL = 'http://127.0.0.1:8000/stats'
 
 export default function HNSearch() {
     const [prompt, setPrompt] = useState('');
